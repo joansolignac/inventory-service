@@ -5,26 +5,23 @@ import com.joan.inventoryservice.modules.product.dtos.variant.response.VariantRe
 import com.joan.inventoryservice.modules.product.entity.Variant;
 import com.joan.inventoryservice.modules.product.exception.VariantAlreadyExistsException;
 import com.joan.inventoryservice.modules.product.entity.Product;
-import com.joan.inventoryservice.modules.product.exception.ProductNotFoundException;
+import com.joan.inventoryservice.modules.product.helper.ProductHelper;
 import com.joan.inventoryservice.modules.product.helper.SkuGenerator;
 import com.joan.inventoryservice.modules.product.repository.VariantRepository;
-import com.joan.inventoryservice.modules.product.repository.ProductRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.UUID;
-
 @Service
 @RequiredArgsConstructor
 public class CreateVariant {
-    private final ProductRepository productRepository;
     private final VariantRepository variantRepository;
     private final SkuGenerator skuGenerator;
+    private final ProductHelper productHelper;
 
     @Transactional
     public VariantResponse execute(CreateVariantCommand command) {
-        Product product = findProduct(command.productId());
+        Product product = productHelper.findProductById(command.productId());
 
         String normalizedVariantName = command.variantName()
                 .trim()
@@ -48,10 +45,5 @@ public class CreateVariant {
         );
 
         return VariantResponse.from(variant);
-    }
-
-    private Product findProduct(UUID id) {
-        return productRepository.findById(id)
-                .orElseThrow(() -> new ProductNotFoundException(id));
     }
 }

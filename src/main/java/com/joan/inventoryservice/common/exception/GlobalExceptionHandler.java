@@ -6,7 +6,9 @@ import com.joan.inventoryservice.common.commands.CreateProblemDetailCommand;
 import com.joan.inventoryservice.modules.product.exception.ProductAlreadyExistsException;
 import com.joan.inventoryservice.modules.product.exception.ProductNotFoundException;
 import com.joan.inventoryservice.modules.product.exception.VariantAlreadyExistsException;
+import com.joan.inventoryservice.modules.product.exception.VariantInsufficientException;
 import com.joan.inventoryservice.modules.product.exception.VariantNotFoundException;
+import com.joan.inventoryservice.modules.product.exception.VariantStockLimitExceededException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
@@ -135,6 +137,30 @@ public class GlobalExceptionHandler {
         var command = new CreateProblemDetailCommand(
                 HttpStatus.NOT_FOUND,
                 "Not Found",
+                ex.getMessage()
+        );
+
+        return this.compactProblemDetail(request, command);
+    }
+
+    @ExceptionHandler(VariantStockLimitExceededException.class)
+    public ProblemDetail handleVariantStockLimitExceeded(VariantStockLimitExceededException ex, HttpServletRequest request) {
+
+        var command = new CreateProblemDetailCommand(
+                HttpStatus.CONFLICT,
+                "Conflict",
+                ex.getMessage()
+        );
+
+        return this.compactProblemDetail(request, command);
+    }
+
+    @ExceptionHandler(VariantInsufficientException.class)
+    public ProblemDetail handleVariantInsufficient(VariantInsufficientException ex, HttpServletRequest request) {
+
+        var command = new CreateProblemDetailCommand(
+                HttpStatus.CONFLICT,
+                "Conflict",
                 ex.getMessage()
         );
 

@@ -4,14 +4,12 @@ import com.joan.inventoryservice.common.dtos.request.PaginationRequest;
 import com.joan.inventoryservice.common.dtos.response.PaginationResponse;
 import com.joan.inventoryservice.modules.product.commands.CreateVariantCommand;
 import com.joan.inventoryservice.modules.product.commands.UpdateVariantCommand;
+import com.joan.inventoryservice.modules.product.dtos.variant.request.AddStockRequest;
 import com.joan.inventoryservice.modules.product.dtos.variant.request.CreateVariantRequest;
+import com.joan.inventoryservice.modules.product.dtos.variant.request.ReserveStockRequest;
 import com.joan.inventoryservice.modules.product.dtos.variant.request.UpdateVariantRequest;
 import com.joan.inventoryservice.modules.product.dtos.variant.response.VariantResponse;
-import com.joan.inventoryservice.modules.product.features.variant.CreateVariant;
-import com.joan.inventoryservice.modules.product.features.variant.DeleteVariant;
-import com.joan.inventoryservice.modules.product.features.variant.FindAllVariants;
-import com.joan.inventoryservice.modules.product.features.variant.GetVariant;
-import com.joan.inventoryservice.modules.product.features.variant.UpdateVariant;
+import com.joan.inventoryservice.modules.product.features.variant.*;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +26,8 @@ public class VariantController {
     private final GetVariant getVariant;
     private final UpdateVariant updateVariant;
     private final DeleteVariant deleteVariant;
+    private final AddStock addStock;
+    private final ReserveStock reserveStock;
 
     @PostMapping()
     public ResponseEntity<VariantResponse> create(@RequestBody @Valid CreateVariantRequest body) {
@@ -39,6 +39,29 @@ public class VariantController {
         ));
 
         return ResponseEntity.ok(variant);
+    }
+
+    @PostMapping("/{id}/add-stock")
+    public ResponseEntity<VariantResponse> addStock(
+            @PathVariable String id,
+            @RequestBody @Valid AddStockRequest body
+            ) {
+        var response = addStock.execute(
+                UUID.fromString(id),
+                body.quantity()
+        );
+
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/{id}/reserve-stock")
+    public ResponseEntity<Void> reserveStock(
+            @PathVariable String id,
+            @RequestBody @Valid ReserveStockRequest body
+    ) {
+        reserveStock.execute(UUID.fromString(id), body.quantity());
+
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping()

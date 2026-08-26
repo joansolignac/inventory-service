@@ -1,7 +1,7 @@
 package com.joan.inventoryservice.modules.product.features.variant;
 
 import com.joan.inventoryservice.modules.product.entity.Variant;
-import com.joan.inventoryservice.modules.product.exception.VariantNotFoundException;
+import com.joan.inventoryservice.modules.product.helper.VariantHelper;
 import com.joan.inventoryservice.modules.product.repository.VariantRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -12,15 +12,11 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class DeleteVariant {
     private final VariantRepository variantRepository;
+    private final VariantHelper variantHelper;
 
     public void execute(UUID id) {
-        Variant variant = findVariant(id);
+        Variant variant = variantHelper.findVariantById(id);
 
         variantRepository.delete(variant);
-    }
-
-    private Variant findVariant(UUID id) {
-        return variantRepository.findById(id)
-                .orElseThrow(() -> new VariantNotFoundException(id));
     }
 }

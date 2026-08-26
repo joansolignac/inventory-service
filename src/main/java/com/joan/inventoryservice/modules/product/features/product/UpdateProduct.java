@@ -4,7 +4,7 @@ import com.joan.inventoryservice.modules.category.helper.CategoryHelper;
 import com.joan.inventoryservice.modules.product.dtos.product.response.ProductResponse;
 import com.joan.inventoryservice.modules.product.entity.Product;
 import com.joan.inventoryservice.modules.product.exception.ProductAlreadyExistsException;
-import com.joan.inventoryservice.modules.product.exception.ProductNotFoundException;
+import com.joan.inventoryservice.modules.product.helper.ProductHelper;
 import com.joan.inventoryservice.modules.product.repository.ProductRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -17,10 +17,11 @@ import java.util.UUID;
 public class UpdateProduct {
     private final ProductRepository productRepository;
     private final CategoryHelper categoryHelper;
+    private final ProductHelper productHelper;
 
     @Transactional
     public ProductResponse execute(UUID id, UUID categoryId, String productName) {
-        Product product = findProduct(id);
+        Product product = productHelper.findProductById(id);
 
         if (categoryId != null) {
             product.setCategory(categoryHelper.findCategoryById(categoryId));
@@ -43,10 +44,5 @@ public class UpdateProduct {
         }
 
         return ProductResponse.from(productRepository.save(product));
-    }
-
-    private Product findProduct(UUID id) {
-        return productRepository.findById(id)
-                .orElseThrow(() -> new ProductNotFoundException(id));
     }
 }
