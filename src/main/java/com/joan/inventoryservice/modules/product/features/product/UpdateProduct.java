@@ -8,6 +8,8 @@ import com.joan.inventoryservice.modules.product.helper.ProductHelper;
 import com.joan.inventoryservice.modules.product.repository.ProductRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -20,6 +22,15 @@ public class UpdateProduct {
     private final ProductHelper productHelper;
 
     @Transactional
+    @Caching(
+            evict = {
+                    @CacheEvict(value = "productById", key = "#id"),
+                    @CacheEvict(value = "productList", allEntries = true),
+                    @CacheEvict(value = "variantById", allEntries = true),
+                    @CacheEvict(value = "variantList", allEntries = true),
+                    @CacheEvict(value = "variantListByProduct", allEntries = true)
+            }
+    )
     public ProductResponse execute(UUID id, UUID categoryId, String productName) {
         Product product = productHelper.findProductById(id);
 

@@ -11,6 +11,8 @@ import com.joan.inventoryservice.modules.product.helper.VariantHelper;
 import com.joan.inventoryservice.modules.product.repository.VariantRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -22,6 +24,13 @@ public class UpdateVariant {
     private final VariantHelper variantHelper;
 
     @Transactional
+    @Caching(
+            evict = {
+                    @CacheEvict(value = "variantById", key = "#command.id()"),
+                    @CacheEvict(value = "variantList", allEntries = true),
+                    @CacheEvict(value = "variantListByProduct", allEntries = true)
+            }
+    )
     public VariantResponse execute(UpdateVariantCommand command) {
         Variant variant = variantHelper.findVariantById(command.id());
 

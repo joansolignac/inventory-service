@@ -9,6 +9,7 @@ import com.joan.inventoryservice.modules.product.exception.VariantAlreadyExistsE
 import com.joan.inventoryservice.modules.product.exception.VariantInsufficientException;
 import com.joan.inventoryservice.modules.product.exception.VariantNotFoundException;
 import com.joan.inventoryservice.modules.product.exception.VariantStockLimitExceededException;
+import com.joan.inventoryservice.modules.reservation.exception.ReservationAlreadyExistsException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
@@ -157,6 +158,18 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(VariantInsufficientException.class)
     public ProblemDetail handleVariantInsufficient(VariantInsufficientException ex, HttpServletRequest request) {
+
+        var command = new CreateProblemDetailCommand(
+                HttpStatus.CONFLICT,
+                "Conflict",
+                ex.getMessage()
+        );
+
+        return this.compactProblemDetail(request, command);
+    }
+
+    @ExceptionHandler(ReservationAlreadyExistsException.class)
+    public ProblemDetail handleReservationAlreadyExists(ReservationAlreadyExistsException ex, HttpServletRequest request) {
 
         var command = new CreateProblemDetailCommand(
                 HttpStatus.CONFLICT,

@@ -8,6 +8,7 @@ import com.joan.inventoryservice.modules.product.exception.ProductAlreadyExistsE
 import com.joan.inventoryservice.modules.product.repository.ProductRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -19,6 +20,7 @@ public class CreateProduct {
     private final CategoryHelper categoryHelper;
 
     @Transactional
+    @CacheEvict(value = "productList", allEntries = true)
     public ProductResponse execute(UUID categoryId, String productName) {
         String normalizedProductName = productName.toUpperCase();
 

@@ -5,6 +5,7 @@ import com.joan.inventoryservice.modules.product.dtos.variant.response.VariantRe
 import com.joan.inventoryservice.modules.product.helper.ProductHelper;
 import com.joan.inventoryservice.modules.product.repository.VariantRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -17,6 +18,10 @@ public class FindAllVariantsByProduct {
     private final VariantRepository variantRepository;
     private final ProductHelper productHelper;
 
+    @Cacheable(
+            value = "variantListByProduct",
+            key = "'productId=' + #productId + ':page=' + #pageable.pageNumber + ':size=' + #pageable.pageSize + ':sort=' + #pageable.sort.toString()"
+    )
     public PaginationResponse<VariantResponse> execute(UUID productId, Pageable pageable) {
         productHelper.findProductById(productId);
 

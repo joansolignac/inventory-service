@@ -6,6 +6,8 @@ import com.joan.inventoryservice.modules.product.helper.VariantHelper;
 import com.joan.inventoryservice.modules.product.repository.VariantRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -17,6 +19,13 @@ public class AddStock {
     private final VariantHelper variantHelper;
 
     @Transactional
+    @Caching(
+            evict = {
+                    @CacheEvict(value = "variantById", key = "#id"),
+                    @CacheEvict(value = "variantList", allEntries = true),
+                    @CacheEvict(value = "variantListByProduct", allEntries = true)
+            }
+    )
     public VariantResponse execute(UUID id, int quantity) {
         var variant = variantHelper.findVariantById(id);
 

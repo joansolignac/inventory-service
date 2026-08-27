@@ -4,6 +4,7 @@ import com.joan.inventoryservice.common.dtos.response.PaginationResponse;
 import com.joan.inventoryservice.modules.product.dtos.variant.response.VariantResponse;
 import com.joan.inventoryservice.modules.product.repository.VariantRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -13,6 +14,10 @@ import org.springframework.stereotype.Service;
 public class FindAllVariants {
     private final VariantRepository variantRepository;
 
+    @Cacheable(
+            value = "variantList",
+            key = "'page=' + #pageable.pageNumber + ':size=' + #pageable.pageSize + ':sort=' + #pageable.sort.toString()"
+    )
     public PaginationResponse<VariantResponse> execute(Pageable pageable) {
         Page<VariantResponse> page = variantRepository.findAll(pageable)
                 .map(VariantResponse::from);

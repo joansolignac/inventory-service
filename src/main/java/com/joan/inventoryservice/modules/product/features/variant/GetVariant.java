@@ -4,6 +4,7 @@ import com.joan.inventoryservice.modules.product.dtos.variant.response.VariantRe
 import com.joan.inventoryservice.modules.product.entity.Variant;
 import com.joan.inventoryservice.modules.product.helper.VariantHelper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -13,6 +14,7 @@ import java.util.UUID;
 public class GetVariant {
     private final VariantHelper variantHelper;
 
+    @Cacheable(value = "variantById", key = "#id")
     public VariantResponse execute(UUID id) {
         Variant variant = variantHelper.findVariantById(id);
 

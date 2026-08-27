@@ -4,6 +4,8 @@ import com.joan.inventoryservice.modules.product.entity.Product;
 import com.joan.inventoryservice.modules.product.helper.ProductHelper;
 import com.joan.inventoryservice.modules.product.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -14,6 +16,15 @@ public class DeleteProduct {
     private final ProductRepository productRepository;
     private final ProductHelper productHelper;
 
+    @Caching(
+            evict = {
+                    @CacheEvict(value = "productById", key = "#id"),
+                    @CacheEvict(value = "productList", allEntries = true),
+                    @CacheEvict(value = "variantById", allEntries = true),
+                    @CacheEvict(value = "variantList", allEntries = true),
+                    @CacheEvict(value = "variantListByProduct", allEntries = true)
+            }
+    )
     public void execute(UUID id) {
         Product product = productHelper.findProductById(id);
 

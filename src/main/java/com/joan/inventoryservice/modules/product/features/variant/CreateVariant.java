@@ -10,6 +10,7 @@ import com.joan.inventoryservice.modules.product.helper.SkuGenerator;
 import com.joan.inventoryservice.modules.product.repository.VariantRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -20,6 +21,7 @@ public class CreateVariant {
     private final ProductHelper productHelper;
 
     @Transactional
+    @CacheEvict(value = {"variantList", "variantListByProduct"}, allEntries = true)
     public VariantResponse execute(CreateVariantCommand command) {
         Product product = productHelper.findProductById(command.productId());
 
