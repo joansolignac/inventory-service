@@ -1,17 +1,16 @@
 services:
-  mysql_service:
-    image: mysql:8.4
+  postgresql_service:
+    image: postgres:17
     container_name: inventory_database
     restart: always
     environment:
-      MYSQL_DATABASE: inventory_database
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_USER: inventory_user
-      MYSQL_PASSWORD: inventory_password
+      POSTGRES_DB: ${POSTGRES_DB:-inventory_database}
+      POSTGRES_USER: ${POSTGRES_USER:-inventory_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
     ports:
-      - "3306:3306"
+      - "5432:5432"
     volumes:
-      - db_data:/var/lib/mysql
+      - db_data:/var/lib/postgresql/data
     network_mode: bridge
   redis:
     image: redis:7-alpine
